@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "version": "1.14.0",
+    "libraryName": "shp-test",
+    "libraryId": "da2cabee-f074-482e-a9ff-5cf84f2838aa",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "shp-test",
+    "solutionShortDescription": "shp-test description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}
