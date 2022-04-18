@@ -43,29 +43,33 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
 
   public render(): void {
     this.domElement.innerHTML = `
-<section class="${styles.helloWorld} ${
+    <section class="${styles.helloWorld} ${
       !!this.context.sdks.microsoftTeams ? styles.teams : ""
     }">
-  <div class="${styles.welcome}">
-    <img alt="" src="${
-      this._isDarkTheme
-        ? require("./assets/welcome-dark.png")
-        : require("./assets/welcome-light.png")
-    }" class="${styles.welcomeImage}" />
-    <h2>Well done, ${escape(this.context.pageContext.user.displayName)}!</h2>
-    <div>${this._environmentMessage}</div>
-  </div>
-  <div>
-    <h3>Welcome to SharePoint Framework!</h3>
-    <div>Web part description: <strong>${escape(
-      this.properties.description
-    )}</strong></div>
-    <div>Web part test: <strong>${escape(this.properties.test)}</strong></div>
-    <div>Loading from: <strong>${escape(
-      this.context.pageContext.web.title
-    )}</strong></div>
-  </div>
-  <div id="spListContainer" />
+      <div class="${styles.welcome}">
+        <img alt="" src="${
+          this._isDarkTheme
+            ? require("./assets/welcome-dark.png")
+            : require("./assets/welcome-light.png")
+        }" class="${styles.welcomeImage}" />
+        <h2>Well done, ${escape(
+          this.context.pageContext.user.displayName
+        )}!</h2>
+        <div>${this._environmentMessage}</div>
+      </div>
+        <div>
+         <h3>Welcome to SharePoint Framework!</h3>
+          <div>Web part description: <strong>${escape(
+            this.properties.description
+          )}</strong></div>
+          <div>Web part test: <strong>${escape(
+            this.properties.test
+          )}</strong></div>
+          <div>Loading from: <strong>${escape(
+            this.context.pageContext.web.title
+          )}</strong></div>
+        </div>
+      <div id="spListContainer" />
 </section>`;
 
     this._renderListAsync();
@@ -87,15 +91,16 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
     let html: string = "";
     items.forEach((item: ISPList) => {
       html += `
-  <ul class="${styles.list}">
-    <li class="${styles.listItem}">
-      <span class="ms-font-l">${item.Title}</span>
-    </li>
-  </ul>`;
+        <ul class="${styles.list}">
+          <li class="${styles.listItem}">
+            <span class="ms-font-l">${item.Title}</span>
+          </li>
+        </ul>`;
     });
 
     const listContainer: Element =
       this.domElement.querySelector("#spListContainer");
+
     listContainer.innerHTML = html;
   }
 
