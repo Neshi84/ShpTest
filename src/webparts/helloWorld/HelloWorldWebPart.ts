@@ -12,7 +12,7 @@ import { escape } from "@microsoft/sp-lodash-subset";
 
 import styles from "./HelloWorldWebPart.module.scss";
 import * as strings from "HelloWorldWebPartStrings";
-import { SPHttpClient, SPHttpClientResponse } from "@microsoft/sp-http";
+import { SPHttpClient, SPHttpClientResponse, ISPHttpClientOptions } from "@microsoft/sp-http";
 
 export interface IHelloWorldWebPartProps {
   description: string;
@@ -29,6 +29,8 @@ export interface ISPLists {
 export interface ISPList {
   Title: string;
   Id: string;
+  Name:string;
+  LastName:string;
 }
 
 export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorldWebPartProps> {
@@ -69,17 +71,51 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
             this.context.pageContext.web.title
           )}</strong></div>
         </div>
+            <input type="text" id="name"></input>
+            <input type="text" id="lastName"></input>
+            <input type=submit id="save" value="Save"></input>
+        <div>
+        </div>
       <div id="spListContainer" />
 </section>`;
 
+    this._setButtonEventHandlers();
     this._renderListAsync();
   }
+
+  private _setButtonEventHandlers():void{
+
+    this.domElement.querySelector("#save").addEventListener('click',()=>{
+      const spOpts: ISPHttpClientOptions = {
+      body: `{Title: "${escape(this.context.pageContext.user.displayName)}",Name: "${escape(this.domElement.querySelector("#name")["value"])}",LastName: "${escape(this.domElement.querySelector("#lastName")["value"])}"}`
+    };
+    this._makePOSTRequest(spOpts);
+      alert("Hello "+this.domElement.querySelector("#name")["value"]+" "+this.domElement.querySelector("#lastName")["value"]+"!");
+    })
+  }
+
+  private _makePOSTRequest(spOpts: ISPHttpClientOptions): void {
+
+    console.log(spOpts)
+    this.context.spHttpClient.post(`${this.context.pageContext.web.absoluteUrl}/_api/web/lists/getbytitle('TestList')/items`, SPHttpClient.configurations.v1, spOpts)
+      .then((response: SPHttpClientResponse) => {
+        // Access properties of the response object. 
+        console.log(`Status code: ${response.status}`);
+        console.log(`Status text: ${response.statusText}`);
+
+        //response.json() returns a promise so you get access to the json in the resolve callback.
+        response.json().then((responseJSON: JSON) => {
+          console.log(responseJSON);
+           this._renderListAsync();
+        });
+      });
+}
 
   private _getListData(): Promise<ISPLists> {
     return this.context.spHttpClient
       .get(
         this.context.pageContext.web.absoluteUrl +
-          `/_api/web/lists?$filter=Hidden eq false`,
+          `/_api/web/lists/getbytitle('TestList')/items`,
         SPHttpClient.configurations.v1
       )
       .then((response: SPHttpClientResponse) => {
@@ -89,11 +125,13 @@ export default class HelloWorldWebPart extends BaseClientSideWebPart<IHelloWorld
 
   private _renderList(items: ISPList[]): void {
     let html: string = "";
+    console.log(items)
     items.forEach((item: ISPList) => {
       html += `
         <ul class="${styles.list}">
           <li class="${styles.listItem}">
-            <span class="ms-font-l">${item.Title}</span>
+            <span class="ms-font-l">${item.Title}<input type="text" value=${item.Name}></input><input type="text" value=${item.LastName}></input></span>
+
           </li>
         </ul>`;
     });
